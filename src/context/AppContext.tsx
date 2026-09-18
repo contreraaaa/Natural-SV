@@ -337,12 +337,55 @@ if (sessionUser) {
       if (!currentUser) return "Debes iniciar sesión.";
       if (!address.trim()) return "Ingresa una dirección de entrega.";
       if (!cart.length) return "Tu carrito está vacío.";
-      const unavailable = cart.find(
-        (i) => (products.find((p) => p.id === i.id)?.stock ?? 0) < i.quantity,
-      );
-      if (unavailable) return `Stock insuficiente para ${unavailable.name}.`;
-      const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-      const shipping = subtotal >= 45 ? 0 : 3;
+      //const unavailable = cart.find(
+      //  (i) => (products.find((p) => p.id === i.id)?.stock ?? 0) < i.quantity,
+      //);
+      //if (unavailable) return `Stock insuficiente para ${unavailable.name}.`;
+      //const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+      //const shipping = subtotal >= 45 ? 0 : 3;
+      const orderItems: Order["items"] = [];
+
+for (const cartItem of cart) {
+  const product = products.find(
+    (p) =>
+      p.id === cartItem.productId
+  );
+
+  if (!product) {
+    return "Uno de los productos ya no existe.";
+  }
+
+  if (!product.active) {
+    return `${product.name} ya no está disponible.`;
+  }
+
+  if (
+    product.stock <
+    cartItem.quantity
+  ) {
+    return `Stock insuficiente para ${product.name}.`;
+  }
+
+  orderItems.push({
+    productId: product.id,
+    name: product.name,
+    price: product.price,
+    quantity: cartItem.quantity,
+  });
+}
+
+const subtotal = orderItems.reduce(
+  (total, item) =>
+    total +
+    item.price * item.quantity,
+  0
+);
+
+const shipping =
+  subtotal >= 45 ? 0 : 3;
+
+const total =
+  subtotal + shipping;
       const date = new Date();
       const delivery = new Date(date);
       delivery.setDate(date.getDate() + 3);
