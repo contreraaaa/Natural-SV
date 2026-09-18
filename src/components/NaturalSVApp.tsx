@@ -1516,8 +1516,17 @@ function Cart() {
     ): item is Product & { quantity: number } =>
       item !== null
   );
-  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-  const shipping = subtotal >= 45 ? 0 : 3;
+  //const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  //const shipping = subtotal >= 45 ? 0 : 3;
+  const subtotal = cartDetails.reduce(
+  (total, item) =>
+    total + item.price * item.quantity,
+  0
+);
+
+const shipping = subtotal >= 45 ? 0 : 3;
+
+const total = subtotal + shipping;
   function checkout() {
     const result = createOrder(address);
     if (result) {
@@ -1622,7 +1631,7 @@ function Cart() {
               </div>
               <div className="flex justify-between border-t border-[#dfe6dc] pt-4 text-lg">
                 <b>Total</b>
-                <b>{money(subtotal + shipping)}</b>
+                <b>{money(total)}</b>
               </div>
             </div>
             {subtotal < 45 && (
