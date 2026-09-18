@@ -1567,7 +1567,7 @@ const total = subtotal + shipping;
         <div className="grid gap-6 xl:grid-cols-[1fr_390px]">
           <Card className="p-4 sm:p-6">
             <div className="space-y-3">
-              {cart.map((i) => (
+              {cartDetails.map((i) => (
                 <div
                   key={i.id}
                   className="flex flex-col gap-4 rounded-2xl border border-[#e1e8de] p-4 sm:flex-row sm:items-center"
