@@ -1372,11 +1372,28 @@ function Catalog() {
   const { products, addToCart, cart } = useApp();
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
-  const active = products.filter(
-    (p) =>
-      p.active &&
-      (p.name + p.category).toLowerCase().includes(query.toLowerCase()),
-  );
+  
+  //const active = products.filter(
+  //  (p) =>
+  //    p.active &&
+  //    (p.name + p.category).toLowerCase().includes(query.toLowerCase()),
+  //);
+  //mejora busqueda por producto
+  const normalizedQuery = query
+  .trim()
+  .toLowerCase();
+
+const active = products.filter((product) => {
+  if (!product.active) return false;
+
+  const text = `
+    ${product.name}
+    ${product.category}
+    ${product.description}
+  `.toLowerCase();
+
+  return text.includes(normalizedQuery);
+});
   function add(p: Product) {
     const result = addToCart(p);
     setMessage(result ?? `${p.name} se agregó al carrito.`);
@@ -1469,10 +1486,36 @@ function Catalog() {
 }
 
 function Cart() {
-  const { cart, changeCartQuantity, removeFromCart, createOrder } = useApp();
+  //const { cart, changeCartQuantity, removeFromCart, createOrder } = useApp();
+  const {
+  cart,
+  products,
+  changeCartQuantity,
+  removeFromCart,
+  createOrder,
+} = useApp();
   const [address, setAddress] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const cartDetails = cart
+  .map((item) => {
+    const product = products.find(
+      (p) => p.id === item.productId
+    );
+
+    if (!product) return null;
+
+    return {
+      ...product,
+      quantity: item.quantity,
+    };
+  })
+  .filter(
+    (
+      item
+    ): item is Product & { quantity: number } =>
+      item !== null
+  );
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
   const shipping = subtotal >= 45 ? 0 : 3;
   function checkout() {
