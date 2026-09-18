@@ -18,7 +18,7 @@ export interface Product {
   price: number;
   stock: number;
   minStock: number;
-  emoji: string;
+  imageUrl?: string;
   active: boolean;
 }
 export interface OrderItem {

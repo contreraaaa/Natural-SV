@@ -10,7 +10,7 @@ import {
 import { seedOrders, seedProducts, seedUsers } from "@/lib/seed";
 import type { CartItem, Order, OrderStatus, Product, User } from "@/lib/types";
 
-type ProductInput = Omit<Product, "id">;
+type ProductInput = Omit<Product, "id"> & { imageUrl?: string };
 type Registration = Pick<User, "name" | "email" | "password" | "phone">;
 interface AppContextValue {
   ready: boolean;
@@ -310,15 +310,19 @@ if (sessionUser) {
 
 
   const changeCartQuantity = useCallback(
-    (id: string, quantity: number) =>
+    (productId: string, quantity: number) => {
+      const product = products.find((p) => p.id === productId);
+      const maxStock = product ? product.stock : 1;
+
       setCart((l) =>
         l.map((i) =>
-          i.id === id
-            ? { ...i, quantity: Math.max(1, Math.min(quantity, i.stock)) }
+          i.productId === productId
+            ? { ...i, quantity: Math.max(1, Math.min(quantity, maxStock)) }
             : i,
         ),
-      ),
-    [],
+      );
+    },
+    [products],
   );
   const removeFromCart = useCallback(
     //(id: string) => setCart((l) => l.filter((i) => i.id !== id)),
@@ -389,7 +393,7 @@ const total =
       const date = new Date();
       const delivery = new Date(date);
       delivery.setDate(date.getDate() + 3);
-      const order: Order = {
+     const order: Order = {
         id: `NSV-${String(Date.now()).slice(-4)}`,
         userId: currentUser.id,
         customerName: currentUser.name,
@@ -397,20 +401,15 @@ const total =
         deliveryDate: delivery.toISOString().slice(0, 10),
         address: address.trim(),
         status: "Pendiente",
-        items: cart.map(({ id, name, price, quantity }) => ({
-          productId: id,
-          name,
-          price,
-          quantity,
-        })),
+        items: orderItems,
         subtotal,
         shipping,
-        total: subtotal + shipping,
+        total,
       };
       setProducts((l) =>
         l.map((p) => {
-          const i = cart.find((x) => x.id === p.id);
-          return i ? { ...p, stock: p.stock - i.quantity } : p;
+          const cartItem = cart.find((x) => x.productId === p.id);
+          return cartItem ? { ...p, stock: p.stock - cartItem.quantity } : p;
         }),
       );
       setOrders((l) => [order, ...l]);
