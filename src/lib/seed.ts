@@ -1,0 +1,19 @@
+import type { Order, Product, User } from "./types";
+export const seedUsers:User[]=[
+ {id:"u-admin",name:"Administración NaturalSV",email:"admin@naturalsv.com",password:"Admin123!",role:"admin",phone:"7000-0000",active:true},
+ {id:"u-client",name:"Ana Paula Mejía",email:"cliente@naturalsv.com",password:"Cliente123!",role:"client",phone:"7986-9521",active:true},
+ {id:"u-2",name:"Carlos Hernández",email:"carlos@email.com",password:"Cliente123!",role:"client",phone:"7124-1158",active:true},
+ {id:"u-3",name:"María López",email:"maria@email.com",password:"Cliente123!",role:"client",phone:"7451-3002",active:true}
+];
+export const seedProducts:Product[]=[
+ {id:"p-1",name:"Desintoxicación Orgánica",category:"Bienestar digestivo",description:"Mezcla natural para acompañar hábitos de bienestar y una rutina equilibrada.",price:24.99,stock:18,minStock:6,emoji:"🌿",active:true},
+ {id:"p-2",name:"Cápsulas de Alcachofa",category:"Suplementos",description:"Presentación práctica de 60 cápsulas para complementar tu alimentación diaria.",price:18.5,stock:7,minStock:8,emoji:"💊",active:true},
+ {id:"p-3",name:"Té Reductor Natural",category:"Infusiones",description:"Infusión herbal de sabor suave, ideal para integrar a tu rutina de bienestar.",price:12.75,stock:26,minStock:5,emoji:"🍵",active:true},
+ {id:"p-4",name:"Fibra Verde",category:"Bienestar digestivo",description:"Complemento de fibra con ingredientes de origen vegetal.",price:16,stock:4,minStock:6,emoji:"🥬",active:true}
+];
+export const seedOrders:Order[]=[
+ {id:"NSV-0230",userId:"u-client",customerName:"Ana Paula Mejía",date:"2026-09-17",deliveryDate:"2026-09-20",address:"San Salvador, Soyapango",status:"En preparación",items:[{productId:"p-1",name:"Desintoxicación Orgánica",price:24.99,quantity:1},{productId:"p-2",name:"Cápsulas de Alcachofa",price:18.5,quantity:1}],subtotal:43.49,shipping:3,total:46.49},
+ {id:"NSV-0229",userId:"u-2",customerName:"Carlos Hernández",date:"2026-09-16",deliveryDate:"2026-09-19",address:"Santa Tecla, La Libertad",status:"Confirmado",items:[{productId:"p-3",name:"Té Reductor Natural",price:12.75,quantity:2}],subtotal:25.5,shipping:3,total:28.5},
+ {id:"NSV-0228",userId:"u-3",customerName:"María López",date:"2026-09-13",deliveryDate:"2026-09-16",address:"Mejicanos, San Salvador",status:"Entregado",items:[{productId:"p-1",name:"Desintoxicación Orgánica",price:24.99,quantity:2}],subtotal:49.98,shipping:0,total:49.98},
+ {id:"NSV-0227",userId:"u-client",customerName:"Ana Paula Mejía",date:"2026-09-08",deliveryDate:"2026-09-11",address:"San Salvador, Soyapango",status:"Entregado",items:[{productId:"p-2",name:"Cápsulas de Alcachofa",price:18.5,quantity:1}],subtotal:18.5,shipping:3,total:21.5}
+];
