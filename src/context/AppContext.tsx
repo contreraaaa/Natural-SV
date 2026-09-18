@@ -321,8 +321,16 @@ if (sessionUser) {
     [],
   );
   const removeFromCart = useCallback(
-    (id: string) => setCart((l) => l.filter((i) => i.id !== id)),
-    [],
+    //(id: string) => setCart((l) => l.filter((i) => i.id !== id)),
+    //[],
+    (productId: string) => {
+    setCart((previous) =>
+      previous.filter(
+        (item) => item.productId !== productId
+      )
+    );
+  },
+  []
   );
   const createOrder = useCallback(
     (address: string) => {
