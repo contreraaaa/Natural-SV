@@ -39,8 +39,10 @@ const KEYS = {
   products: "nsv_products",
   orders: "nsv_orders",
   session: "nsv_session",
-  cart: "nsv_cart",
 };
+function cartKey(userId: string) {
+  return `nsv_cart_${userId}`;
+}                       //esto hace que cada user tenga su propio carrito, que segun analisis era un carrito por navegacion general.
 function load<T>(key: string, fallback: T): T {
   try {
     const value = localStorage.getItem(key);
@@ -84,9 +86,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setUsers(initialUsers);
       setProducts(initialProducts);
       setOrders(initialOrders);
-      setCart(load(KEYS.cart, []));
-      const sessionId = load<string | null>(KEYS.session, null);
-      setCurrentUser(initialUsers.find((u) => u.id === sessionId) ?? null);
+      //setCart(load(KEYS.cart, []));
+      //const sessionId = load<string | null>(KEYS.session, null);
+      //setCurrentUser(initialUsers.find((u) => u.id === sessionId) ?? null);
+      //este bloque retoma la sesion del usuario y setea el carrito, para cada uno dependiendo del user
+      const sessionId = load<string | null>(
+  KEYS.session,
+  null
+);
+
+const sessionUser =
+  initialUsers.find(
+    (u) => u.id === sessionId && u.active
+  ) ?? null;
+
+setCurrentUser(sessionUser);
+
+if (sessionUser) {
+  setCart(
+    load<CartItem[]>(
+      cartKey(sessionUser.id),
+      []
+    )
+  );
+} else {
+  setCart([]);
+}
+// fin bloque modificado
       setReady(true);
     })();
     return () => {
@@ -103,8 +129,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (ready) localStorage.setItem(KEYS.orders, JSON.stringify(orders));
   }, [ready, orders]);
   useEffect(() => {
-    if (ready) localStorage.setItem(KEYS.cart, JSON.stringify(cart));
-  }, [ready, cart]);
+    //if (ready) localStorage.setItem(KEYS.cart, JSON.stringify(cart));
+  //}, [ready, cart]);
+  //esto guarda automaticamente el carrito del user
+  if (!ready || !currentUser) return;
+
+  localStorage.setItem(
+    cartKey(currentUser.id),
+    JSON.stringify(cart)
+  );
+}, [ready, currentUser, cart]);
+// fin bloque editado
   const login = useCallback(
     (email: string, password: string) => {
       const user = users.find(
@@ -197,21 +232,83 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setOrders((l) => l.map((o) => (o.id === id ? { ...o, status } : o))),
     [],
   );
+  //const addToCart = useCallback(
+  //  (product: Product) => {
+  //    const inCart = cart.find((i) => i.id === product.id)?.quantity ?? 0;
+  //    if (inCart >= product.stock) return "No hay más unidades disponibles.";
+  //    setCart((l) =>
+  //      l.some((i) => i.id === product.id)
+  //        ? l.map((i) =>
+  //            i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i,
+  //          )
+  //        : [...l, { ...product, quantity: 1 }],
+  //    );
+  //    return null;
+  //  },
+  //  [cart],
+  //);
+  //este bloque valida el stock del producto
+
   const addToCart = useCallback(
-    (product: Product) => {
-      const inCart = cart.find((i) => i.id === product.id)?.quantity ?? 0;
-      if (inCart >= product.stock) return "No hay más unidades disponibles.";
-      setCart((l) =>
-        l.some((i) => i.id === product.id)
-          ? l.map((i) =>
-              i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i,
-            )
-          : [...l, { ...product, quantity: 1 }],
+  (product: Product) => {
+    const currentProduct = products.find(
+      (p) => p.id === product.id
+    );
+
+    if (!currentProduct) {
+      return "El producto ya no existe.";
+    }
+
+    if (!currentProduct.active) {
+      return "Este producto no está disponible.";
+    }
+
+    if (currentProduct.stock <= 0) {
+      return "Este producto está agotado.";
+    }
+
+    const currentQuantity =
+      cart.find(
+        (item) =>
+          item.productId === currentProduct.id
+      )?.quantity ?? 0;
+
+    if (currentQuantity >= currentProduct.stock) {
+      return "No hay más unidades disponibles.";
+    }
+
+    setCart((previous) => {
+      const exists = previous.some(
+        (item) =>
+          item.productId === currentProduct.id
       );
-      return null;
-    },
-    [cart],
-  );
+
+      if (exists) {
+        return previous.map((item) =>
+          item.productId === currentProduct.id
+            ? {
+                ...item,
+                quantity: item.quantity + 1,
+              }
+            : item
+        );
+      }
+
+      return [
+        ...previous,
+        {
+          productId: currentProduct.id,
+          quantity: 1,
+        },
+      ];
+    });
+
+    return null;
+  },
+  [cart, products]
+);
+
+
   const changeCartQuantity = useCallback(
     (id: string, quantity: number) =>
       setCart((l) =>

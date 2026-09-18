@@ -40,6 +40,7 @@ export interface Order {
   shipping: number;
   total: number;
 }
-export interface CartItem extends Product {
+export interface CartItem {
+  productId: string;
   quantity: number;
 }
