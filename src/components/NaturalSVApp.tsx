@@ -1516,8 +1516,17 @@ function Cart() {
     ): item is Product & { quantity: number } =>
       item !== null
   );
-  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-  const shipping = subtotal >= 45 ? 0 : 3;
+  //const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  //const shipping = subtotal >= 45 ? 0 : 3;
+  const subtotal = cartDetails.reduce(
+  (total, item) =>
+    total + item.price * item.quantity,
+  0
+);
+
+const shipping = subtotal >= 45 ? 0 : 3;
+
+const total = subtotal + shipping;
   function checkout() {
     const result = createOrder(address);
     if (result) {
@@ -1558,7 +1567,7 @@ function Cart() {
         <div className="grid gap-6 xl:grid-cols-[1fr_390px]">
           <Card className="p-4 sm:p-6">
             <div className="space-y-3">
-              {cart.map((i) => (
+              {cartDetails.map((i) => (
                 <div
                   key={i.id}
                   className="flex flex-col gap-4 rounded-2xl border border-[#e1e8de] p-4 sm:flex-row sm:items-center"
@@ -1574,11 +1583,17 @@ function Cart() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => changeCartQuantity(i.id, i.quantity - 1)}
-                      className="grid h-9 w-9 place-items-center rounded-lg border"
-                    >
-                      <Minus size={16} />
-                    </button>
+  disabled={i.quantity >= i.stock}
+  onClick={() =>
+    changeCartQuantity(
+      i.id,
+      i.quantity + 1
+    )
+  }
+  className="grid h-9 w-9 place-items-center rounded-lg border disabled:cursor-not-allowed disabled:opacity-40"
+>
+  <Plus size={16} />
+</button>
                     <b className="w-8 text-center">{i.quantity}</b>
                     <button
                       onClick={() => changeCartQuantity(i.id, i.quantity + 1)}
@@ -1622,7 +1637,7 @@ function Cart() {
               </div>
               <div className="flex justify-between border-t border-[#dfe6dc] pt-4 text-lg">
                 <b>Total</b>
-                <b>{money(subtotal + shipping)}</b>
+                <b>{money(total)}</b>
               </div>
             </div>
             {subtotal < 45 && (
