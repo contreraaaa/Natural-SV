@@ -1583,11 +1583,17 @@ const total = subtotal + shipping;
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => changeCartQuantity(i.id, i.quantity - 1)}
-                      className="grid h-9 w-9 place-items-center rounded-lg border"
-                    >
-                      <Minus size={16} />
-                    </button>
+  disabled={i.quantity >= i.stock}
+  onClick={() =>
+    changeCartQuantity(
+      i.id,
+      i.quantity + 1
+    )
+  }
+  className="grid h-9 w-9 place-items-center rounded-lg border disabled:cursor-not-allowed disabled:opacity-40"
+>
+  <Plus size={16} />
+</button>
                     <b className="w-8 text-center">{i.quantity}</b>
                     <button
                       onClick={() => changeCartQuantity(i.id, i.quantity + 1)}
