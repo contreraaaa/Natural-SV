@@ -549,7 +549,7 @@ function Dashboard() {
           <p className="text-sm text-[#77837b]">Unidades acumuladas</p>
           <div className="mt-6 space-y-5">
             {ranking.map(([name, value], index) => (
-              <div key={name}>
+  <div key={`${name}-${index}`}>
                 <div className="mb-2 flex justify-between gap-3 text-sm">
                   <span className="truncate font-semibold">
                     {index + 1}. {name}
@@ -603,7 +603,7 @@ function ProductModal({
     price: product?.price ?? 0,
     stock: product?.stock ?? 0,
     minStock: product?.minStock ?? 5,
-    emoji: product?.emoji ?? "🌿",
+    imageUrl: product?.imageUrl ?? "",
     active: product?.active ?? true,
   });
   const [error, setError] = useState("");
@@ -667,14 +667,14 @@ function ProductModal({
             </select>
           </label>
           <label className="text-sm font-semibold">
-            Ícono
-            <input
-              className={`${field} mt-2`}
-              value={form.emoji}
-              onChange={(e) => setForm({ ...form, emoji: e.target.value })}
-              maxLength={4}
-            />
-          </label>
+  URL de la imagen
+  <input
+    className={`${field} mt-2`}
+    value={form.imageUrl}
+    onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+    placeholder="https://..."
+  />
+</label>
           <label className="text-sm font-semibold">
             Precio ($)
             <input
@@ -816,7 +816,17 @@ function Products() {
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#eef3ea] text-2xl">
-                        {p.emoji}
+                        {p.imageUrl ? (
+      <img 
+        src={p.imageUrl} 
+        alt={p.name} 
+        className="h-11 w-11 rounded-xl object-cover" 
+      />
+    ) : (
+      <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#eef3ea] text-2xl">
+        📦
+      </span>
+    )}
                       </span>
                       <div>
                         <p className="font-bold">{p.name}</p>
@@ -1447,7 +1457,7 @@ const active = products.filter((product) => {
         {active.map((p) => (
           <Card key={p.id} className="group overflow-hidden">
             <div className="grid h-44 place-items-center bg-gradient-to-br from-[#eff4e9] to-[#dce8d2] text-7xl transition group-hover:scale-[1.02]">
-              {p.emoji}
+              {p.imageUrl}
             </div>
             <div className="p-5">
               <p className="text-xs font-bold uppercase tracking-wider text-[#78915f]">
@@ -1573,7 +1583,7 @@ const total = subtotal + shipping;
                   className="flex flex-col gap-4 rounded-2xl border border-[#e1e8de] p-4 sm:flex-row sm:items-center"
                 >
                   <div className="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-[#edf3e8] text-3xl">
-                    {i.emoji}
+                    {i.imageUrl}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="font-bold">{i.name}</p>
