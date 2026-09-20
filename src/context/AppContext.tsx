@@ -228,9 +228,22 @@ if (sessionUser) {
     [currentUser, orders],
   );
   const updateOrderStatus = useCallback(
-    (id: string, status: OrderStatus) =>
-      setOrders((l) => l.map((o) => (o.id === id ? { ...o, status } : o))),
-    [],
+    (id: string, status: OrderStatus) => {
+      setOrders((prevOrders) =>
+        prevOrders.map((order) => {
+          if (order.id !== id) return order;
+
+          // Validación: Evitar modificar pedidos ya finalizados
+          if (order.status === "Entregado" || order.status === "Cancelado") {
+            alert(`Acción denegada: El pedido ya está ${order.status} y no puede modificarse.`);
+            return order;
+          }
+
+          return { ...order, status };
+        })
+      );
+    },
+    []
   );
   //const addToCart = useCallback(
   //  (product: Product) => {
