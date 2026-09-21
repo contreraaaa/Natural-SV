@@ -27,6 +27,10 @@
     UserRound,
     Users,
     X,
+    UserCheck,
+    UserX,
+    TrendingUp,
+    AlertTriangle,
   } from "lucide-react";
 
   const money = (value: number) =>
@@ -293,7 +297,7 @@
     return (
       <div className="min-h-screen bg-[#f7f9f4]">
         <aside
-          className={`fixed inset-y-0 left-0 z-40 w-[270px] border-r border-[#dfe8db] bg-white p-5 transition-transform lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}
+          className={`fixed inset-y-0 left-0 z-40 w-[270px] border-r border-[#dfe8db] bg-white p-5 transition-transform duration-300 lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}
         >
           <div className="flex items-center justify-between">
             <Logo />
@@ -348,7 +352,7 @@
         {open && (
           <button
             aria-label="Cerrar menú"
-            className="fixed inset-0 z-30 bg-black/30 lg:hidden"
+            className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm transition-opacity lg:hidden"
             onClick={() => setOpen(false)}
           />
         )}
@@ -458,7 +462,7 @@
             <ChevronRight size={18} />
           </Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" lg:grid-cols-4>
           {[
             {
               label: "Ventas entregadas",
@@ -517,7 +521,7 @@
               </Link>
             </div>
             <div className="mt-5 overflow-x-auto">
-              <table className="w-full min-w-[620px] text-left text-sm">
+              <table className="w-full min-w-[500px] text-left text-sm whitespace-nowrap">
                 <thead>
                   <tr className="border-b border-[#e4ebe1] text-[#758078]">
                     <th className="pb-3 font-semibold">Pedido</th>
@@ -545,9 +549,15 @@
             </div>
           </Card>
           <Card className="p-5 sm:p-6">
-            <p className="font-bold">Productos más vendidos</p>
-            <p className="text-sm text-[#77837b]">Unidades acumuladas</p>
-            <div className="mt-6 space-y-5">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                  <p className="font-bold">Productos más vendidos</p>
+                  <p className="text-sm text-[#77837b]">Unidades acumuladas</p>
+              </div>
+              <TrendingUp className="text-[#4f7536]" size={24} />
+            </div>
+            
+            <div className="space-y-5">
               {ranking.map(([name, value], index) => (
     <div key={`${name}-${index}`}>
                   <div className="mb-2 flex justify-between gap-3 text-sm">
@@ -568,16 +578,16 @@
           </Card>
         </div>
         {low.length > 0 && (
-          <Card className="border-amber-200 bg-amber-50/70 p-5">
-            <div className="flex gap-4">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700">
+          <Card className="border-amber-200 bg-red-50 p-5 shadow-sm">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-red-100 text-red-600">
                 <Box />
               </div>
-              <div>
-                <p className="font-bold text-amber-900">
+              <div className="flex-1">
+                <p className="font-bold text-red-900 text-lg">
                   Inventario que necesita atención
                 </p>
-                <p className="mt-1 text-sm text-amber-800">
+                <p className="mt-1 text-sm text-red-800">
                   {low.map((p) => `${p.name} (${p.stock})`).join(" · ")}
                 </p>
               </div>
