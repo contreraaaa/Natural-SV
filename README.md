@@ -1,9 +1,13 @@
 Integrantes:
 
 Luis Alexander Arteaga Sigüenza Carnet: AS230282
+
 Emerson Alexander Gudiel Magaña Carnet: GM171814
+
 Héctor Enrique Hernández Cerón  Carnet: HC120286
+
 José Armando Contreras Rosales  Carnet: CR252999
+
 José Daniel Rodas Cerin 	    Carnet: RC230465
 
 # NaturalSV - Primer avance web
