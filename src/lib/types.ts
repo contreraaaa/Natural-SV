@@ -11,6 +11,7 @@ export interface User {
   active: boolean;
 }
 export interface Product {
+  emoji?: string;
   id: string;
   name: string;
   category: string;
